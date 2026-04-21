@@ -4,7 +4,7 @@ services:
     environment:
       ORACLE_PWD: ${DB_PASSWORD:-password}
       APP_USER: ${DB_USER:-AQUAGUARD_USER}
-      APP_USER_PWD: ${DB_PASSWORD:-password}
+      APP_USER_PASSWORD: ${DB_PASSWORD:-password}
     volumes:
       - oracle_data:/opt/oracle/oradata
     healthcheck:
