@@ -65,7 +65,7 @@ jobs:
         shell: pwsh
         run: |
           Write-Host "Aguardando aplicação em staging..."
-          for ($i = 1; $i -le 12; $i++) {
+          for ($i = 1; $i -le 20; $i++) {
             try {
               $r = Invoke-WebRequest -Uri "http://localhost:8080/actuator/health" -UseBasicParsing -TimeoutSec 5 -ErrorAction Stop
               if ($r.StatusCode -eq 200) { Write-Host "Staging está saudável!"; exit 0 }
@@ -99,7 +99,7 @@ jobs:
         shell: pwsh
         run: |
           Write-Host "Aguardando aplicação em produção..."
-          for ($i = 1; $i -le 12; $i++) {
+          for ($i = 1; $i -le 20; $i++) {
             try {
               $r = Invoke-WebRequest -Uri "http://localhost:8081/actuator/health" -UseBasicParsing -TimeoutSec 5 -ErrorAction Stop
               if ($r.StatusCode -eq 200) { Write-Host "Produção está saudável!"; exit 0 }
