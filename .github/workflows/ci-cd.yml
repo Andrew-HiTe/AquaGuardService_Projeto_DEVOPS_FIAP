@@ -57,6 +57,7 @@ jobs:
         shell: pwsh
         run: |
           Write-Host "Iniciando deploy em Staging..."
+          docker rm -f oracle-db-staging aquaguard-app-staging 2>$null
           docker compose -f docker-compose.yml -f docker-compose.staging.yml down --remove-orphans
           docker compose -f docker-compose.yml -f docker-compose.staging.yml up -d --build
           Write-Host "Staging disponível em http://localhost:8080"
@@ -91,6 +92,7 @@ jobs:
         shell: pwsh
         run: |
           Write-Host "Iniciando deploy em Produção..."
+          docker rm -f oracle-db-production aquaguard-app-production 2>$null
           docker compose -f docker-compose.yml -f docker-compose.production.yml down --remove-orphans
           docker compose -f docker-compose.yml -f docker-compose.production.yml up -d --build
           Write-Host "Produção disponível em http://localhost:8081"
