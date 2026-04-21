@@ -1,0 +1,15 @@
+services:
+  oracle:
+    container_name: oracle-db-production
+    ports:
+      - "1522:1521"
+    volumes:
+      - oracle_production_data:/opt/oracle/oradata
+
+  app:
+    container_name: aquaguard-app-production
+    ports:
+      - "8081:8080"
+
+volumes:
+  oracle_production_data:

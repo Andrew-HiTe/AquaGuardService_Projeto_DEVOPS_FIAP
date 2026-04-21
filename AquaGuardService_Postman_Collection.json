@@ -1,0 +1,354 @@
+{
+	"info": {
+		"_postman_id": "c1d2e3f4-5a6b-7c8d-9e0f-1a2b3c4d5e6f",
+		"name": "AquaGuardService - ESG Water Monitoring",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"description": "Collection para testar os endpoints do AquaGuardService, focado em Acesso à água e preservação de recursos naturais (ESG)."
+	},
+	"item": [
+		{
+			"name": "1. Autenticação (Basic Auth)",
+			"item": [
+				{
+					"name": "Login Admin (Para Endpoints Protegidos)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/sensores/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"sensores",
+								"1"
+							]
+						},
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "adminpass",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login User (Para Endpoints Protegidos)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/alertas",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"alertas"
+							]
+						},
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "user",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "userpass",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Sensores (Protegido por ADMIN)",
+			"item": [
+				{
+					"name": "POST /api/v1/sensores (Cadastrar Sensor)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"localizacao\": \"Rua C, Empresa XYZ\",\n    \"tipo\": \"CONSUMO\",\n    \"limiteConsumo\": 100.0,\n    \"ativo\": true\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/sensores",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"sensores"
+							]
+						},
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "adminpass",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /api/v1/sensores/{id} (Buscar Sensor)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/sensores/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"sensores",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. Leituras (Público)",
+			"item": [
+				{
+					"name": "POST /api/v1/leituras (Registrar Leitura - Normal)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/leituras?sensorId=1&valor=45.0",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"leituras"
+							],
+							"query": [
+								{
+									"key": "sensorId",
+									"value": "1"
+								},
+								{
+									"key": "valor",
+									"value": "45.0"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /api/v1/leituras (Registrar Leitura - Acima do Limite - Deve Gerar Alerta)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/leituras?sensorId=1&valor=55.0",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"leituras"
+							],
+							"query": [
+								{
+									"key": "sensorId",
+									"value": "1"
+								},
+								{
+									"key": "valor",
+									"value": "55.0"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. Alertas e Relatórios (Protegido por USER/ADMIN)",
+			"item": [
+				{
+					"name": "GET /api/v1/alertas (Listar Alertas)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/alertas",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"alertas"
+							]
+						},
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "user",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "userpass",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT /api/v1/alertas/{id}/resolver (Resolver Alerta - Protegido por ADMIN)",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/alertas/1/resolver",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"alertas",
+								"1",
+								"resolver"
+							]
+						},
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "adminpass",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /api/v1/relatorios/consumo-mensal/{sensorId} (Relatório Mensal)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/relatorios/consumo-mensal/1?ano=2025&mes=11",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"relatorios",
+								"consumo-mensal",
+								"1"
+							],
+							"query": [
+								{
+									"key": "ano",
+									"value": "2025"
+								},
+								{
+									"key": "mes",
+									"value": "11"
+								}
+							]
+						},
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "user",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "userpass",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

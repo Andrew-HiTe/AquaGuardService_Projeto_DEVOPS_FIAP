@@ -1,0 +1,15 @@
+services:
+  oracle:
+    container_name: oracle-db-staging
+    ports:
+      - "1521:1521"
+    volumes:
+      - oracle_staging_data:/opt/oracle/oradata
+
+  app:
+    container_name: aquaguard-app-staging
+    ports:
+      - "8080:8080"
+
+volumes:
+  oracle_staging_data:

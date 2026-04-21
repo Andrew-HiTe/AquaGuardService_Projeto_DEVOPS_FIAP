@@ -1,0 +1,46 @@
+services:
+  oracle:
+    image: container-registry.oracle.com/database/express:21.3.0-xe
+    environment:
+      ORACLE_PWD: ${DB_PASSWORD:-password}
+      APP_USER: ${DB_USER:-AQUAGUARD_USER}
+      APP_USER_PWD: ${DB_PASSWORD:-password}
+    volumes:
+      - oracle_data:/opt/oracle/oradata
+    healthcheck:
+      test: ["CMD-SHELL", "echo 'SELECT 1 FROM DUAL;' | sqlplus -s ${DB_USER:-AQUAGUARD_USER}/${DB_PASSWORD:-password}@//localhost:1521/XEPDB1 2>&1 | grep -q '1' && echo OK || exit 1"]
+      interval: 30s
+      timeout: 20s
+      retries: 20
+      start_period: 180s
+    networks:
+      - aquaguard-net
+    restart: always
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:oracle:thin:@oracle:1521/XEPDB1
+      SPRING_DATASOURCE_USERNAME: ${DB_USER:-AQUAGUARD_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-password}
+    depends_on:
+      oracle:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - aquaguard-net
+    restart: on-failure
+
+networks:
+  aquaguard-net:
+    driver: bridge
+
+volumes:
+  oracle_data:

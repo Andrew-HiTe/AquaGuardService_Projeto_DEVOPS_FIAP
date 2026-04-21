@@ -1,0 +1,107 @@
+name: CI/CD Pipeline - AquaGuardService
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build-and-test:
+    name: Build e Testes
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build e execução dos testes
+        run: mvn clean verify -DskipTests=false
+
+      - name: Publicar relatório de testes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: target/surefire-reports/
+
+      - name: Upload do JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-jar
+          path: target/*.jar
+
+  deploy-staging:
+    name: Deploy - Staging
+    needs: build-and-test
+    if: github.ref == 'refs/heads/develop'
+    runs-on: self-hosted
+    environment: staging
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Deploy no ambiente Staging
+        run: |
+          echo "Iniciando deploy em Staging..."
+          docker compose -f docker-compose.yml -f docker-compose.staging.yml down --remove-orphans || true
+          docker compose -f docker-compose.yml -f docker-compose.staging.yml up -d --build
+          echo "Staging disponível em http://localhost:8080"
+
+      - name: Aguardar aplicação ficar saudável
+        run: |
+          echo "Aguardando aplicação em staging..."
+          for i in $(seq 1 12); do
+            if curl -sf http://localhost:8080/actuator/health; then
+              echo "Staging está saudável!"
+              exit 0
+            fi
+            echo "Tentativa $i/12 - aguardando 15s..."
+            sleep 15
+          done
+          echo "Timeout: aplicação não ficou saudável a tempo"
+          exit 1
+
+  deploy-production:
+    name: Deploy - Produção
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main'
+    runs-on: self-hosted
+    environment: production
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Deploy no ambiente Produção
+        run: |
+          echo "Iniciando deploy em Produção..."
+          docker compose -f docker-compose.yml -f docker-compose.production.yml down --remove-orphans || true
+          docker compose -f docker-compose.yml -f docker-compose.production.yml up -d --build
+          echo "Produção disponível em http://localhost:8081"
+
+      - name: Aguardar aplicação ficar saudável
+        run: |
+          echo "Aguardando aplicação em produção..."
+          for i in $(seq 1 12); do
+            if curl -sf http://localhost:8081/actuator/health; then
+              echo "Produção está saudável!"
+              exit 0
+            fi
+            echo "Tentativa $i/12 - aguardando 15s..."
+            sleep 15
+          done
+          echo "Timeout: aplicação não ficou saudável a tempo"
+          exit 1
