@@ -54,26 +54,26 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy no ambiente Staging
-        shell: bash
+        shell: pwsh
         run: |
-          echo "Iniciando deploy em Staging..."
-          docker compose -f docker-compose.yml -f docker-compose.staging.yml down --remove-orphans || true
+          Write-Host "Iniciando deploy em Staging..."
+          docker compose -f docker-compose.yml -f docker-compose.staging.yml down --remove-orphans
           docker compose -f docker-compose.yml -f docker-compose.staging.yml up -d --build
-          echo "Staging disponível em http://localhost:8080"
+          Write-Host "Staging disponível em http://localhost:8080"
 
       - name: Aguardar aplicação ficar saudável
-        shell: bash
+        shell: pwsh
         run: |
-          echo "Aguardando aplicação em staging..."
-          for i in $(seq 1 12); do
-            if curl -sf http://localhost:8080/actuator/health; then
-              echo "Staging está saudável!"
-              exit 0
-            fi
-            echo "Tentativa $i/12 - aguardando 15s..."
-            sleep 15
-          done
-          echo "Timeout: aplicação não ficou saudável a tempo"
+          Write-Host "Aguardando aplicação em staging..."
+          for ($i = 1; $i -le 12; $i++) {
+            try {
+              $r = Invoke-WebRequest -Uri "http://localhost:8080/actuator/health" -UseBasicParsing -TimeoutSec 5 -ErrorAction Stop
+              if ($r.StatusCode -eq 200) { Write-Host "Staging está saudável!"; exit 0 }
+            } catch {}
+            Write-Host "Tentativa $i/12 - aguardando 15s..."
+            Start-Sleep -Seconds 15
+          }
+          Write-Host "Timeout: aplicação não ficou saudável a tempo"
           exit 1
 
   deploy-production:
@@ -88,24 +88,24 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy no ambiente Produção
-        shell: bash
+        shell: pwsh
         run: |
-          echo "Iniciando deploy em Produção..."
-          docker compose -f docker-compose.yml -f docker-compose.production.yml down --remove-orphans || true
+          Write-Host "Iniciando deploy em Produção..."
+          docker compose -f docker-compose.yml -f docker-compose.production.yml down --remove-orphans
           docker compose -f docker-compose.yml -f docker-compose.production.yml up -d --build
-          echo "Produção disponível em http://localhost:8081"
+          Write-Host "Produção disponível em http://localhost:8081"
 
       - name: Aguardar aplicação ficar saudável
-        shell: bash
+        shell: pwsh
         run: |
-          echo "Aguardando aplicação em produção..."
-          for i in $(seq 1 12); do
-            if curl -sf http://localhost:8081/actuator/health; then
-              echo "Produção está saudável!"
-              exit 0
-            fi
-            echo "Tentativa $i/12 - aguardando 15s..."
-            sleep 15
-          done
-          echo "Timeout: aplicação não ficou saudável a tempo"
+          Write-Host "Aguardando aplicação em produção..."
+          for ($i = 1; $i -le 12; $i++) {
+            try {
+              $r = Invoke-WebRequest -Uri "http://localhost:8081/actuator/health" -UseBasicParsing -TimeoutSec 5 -ErrorAction Stop
+              if ($r.StatusCode -eq 200) { Write-Host "Produção está saudável!"; exit 0 }
+            } catch {}
+            Write-Host "Tentativa $i/12 - aguardando 15s..."
+            Start-Sleep -Seconds 15
+          }
+          Write-Host "Timeout: aplicação não ficou saudável a tempo"
           exit 1
