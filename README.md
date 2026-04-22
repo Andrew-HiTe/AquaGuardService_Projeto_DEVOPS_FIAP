@@ -165,24 +165,37 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 
 ### Pipeline GitHub Actions — etapas concluídas
 
-> *(inserir print do GitHub Actions com jobs build-and-test, deploy-staging e deploy-production verdes)*
+**Staging (deploy em `develop`):** build-and-test + deploy-staging verdes.
 
-### Staging disponível (porta 8080)
+![Pipeline Staging](docs/prints/01-pipeline-staging.png)
 
-> *(inserir print do `docker-compose ps` com containers healthy)*
+**Produção (deploy em `main`):** build-and-test + deploy-production verdes.
 
-### Produção disponível (porta 8081)
-
-> *(inserir print do `docker-compose ps` com containers healthy)*
+![Pipeline Produção](docs/prints/02-pipeline-production.png)
 
 ### Endpoint `/actuator/health` respondendo
 
-> *(inserir print: `http://localhost:8080/actuator/health` → `{"status":"UP"}`)*  
-> *(inserir print: `http://localhost:8081/actuator/health` → `{"status":"UP"}`)*
+**Staging — `http://localhost:8080/actuator/health`:**
+
+![Health Staging](docs/prints/03-health-staging.png)
+
+**Produção — `http://localhost:8081/actuator/health`:**
+
+![Health Produção](docs/prints/04-health-production.png)
 
 ### Endpoints via Postman
 
-> *(inserir prints: POST /api/v1/sensores, POST /api/v1/leituras, GET /api/v1/alertas, GET /api/v1/sensores)*
+**POST `/api/v1/sensores` (admin:adminpass) → 201 Created:**
+
+![POST Sensor](docs/prints/05-postman-post-sensor.png)
+
+**POST `/api/v1/leituras?sensorId=1&valor=150.0` → 200 OK (dispara alerta):**
+
+![POST Leitura](docs/prints/06-postman-post-leitura.png)
+
+**GET `/api/v1/sensores/1` → 200 OK:**
+
+![GET Sensor](docs/prints/07-postman-get-sensor.png)
 
 ---
 

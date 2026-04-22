@@ -93,8 +93,8 @@ jobs:
         run: |
           Write-Host "Iniciando deploy em Produção..."
           docker rm -f oracle-db-production aquaguard-app-production 2>$null
-          docker compose -f docker-compose.yml -f docker-compose.production.yml down --remove-orphans
-          docker compose -f docker-compose.yml -f docker-compose.production.yml up -d --build
+          docker compose -p aquaguard-production -f docker-compose.yml -f docker-compose.production.yml down --remove-orphans
+          docker compose -p aquaguard-production -f docker-compose.yml -f docker-compose.production.yml up -d --build
           Write-Host "Produção disponível em http://localhost:8081"
 
       - name: Aguardar aplicação ficar saudável
