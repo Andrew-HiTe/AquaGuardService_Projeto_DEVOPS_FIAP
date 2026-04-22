@@ -249,4 +249,4 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 | Pipeline com etapas de build, teste e deploy | ☑ |
 | README.md com instruções e prints | ☑ |
 | Documentação técnica com evidências (PDF ou PPT) | ☑ |
-| Deploy realizado nos ambientes staging e produção | ☐ |
+| Deploy realizado nos ambientes staging e produção | ☑ |
